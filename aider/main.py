@@ -604,7 +604,9 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         io.tool_output("VSCode terminal detected, pretty output has been disabled.")
 
     def find_foundry_files(foundry_path):
-        return list(foundry_path.rglob("*.sol")) + list(foundry_path.rglob("*.t.sol"))
+    if not foundry_path:
+        return []
+    return list(foundry_path.rglob("*.sol")) + list(foundry_path.rglob("*.t.sol"))
 
         if args.git:
             git_root = setup_git(git_root, io)
