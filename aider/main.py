@@ -235,26 +235,6 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         metavar="FOUNDRY_PATH",
         help="Specify the path to the foundry project to add all files to the chat",
     )
-    core_group.add_argument(
-        "--foundry",
-        metavar="FOUNDRY_PATH",
-        help="Specify the path to the foundry project to add all files to the chat",
-    )
-    core_group.add_argument(
-        "--foundry",
-        metavar="FOUNDRY_PATH",
-        help="Specify the path to the foundry project to add all files to the chat",
-    )
-    core_group.add_argument(
-        "--foundry",
-        metavar="FOUNDRY_PATH",
-        help="Specify the path to the foundry project to add all files to the chat",
-    )
-    core_group.add_argument(
-        "--foundry",
-        metavar="FOUNDRY_PATH",
-        help="Specify the path to the foundry project to add all files to the chat",
-    )
 
     ##########
     model_group = parser.add_argument_group("Advanced Model Settings")
@@ -353,12 +333,6 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         "--light-mode",
         action="store_true",
         help="Use colors suitable for a light terminal background (default: False)",
-        default=False,
-    )
-    core_group.add_argument(
-        "--foundry",
-        metavar="FOUNDRY_PATH",
-        help="Specify the path to the foundry project to add all files to the chat",
         default=False,
     )
     output_group.add_argument(
@@ -604,26 +578,9 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         io.tool_output("VSCode terminal detected, pretty output has been disabled.")
 
     def find_foundry_files(foundry_path):
-    if not foundry_path:
-        return []
-    return list(foundry_path.rglob("*.sol")) + list(foundry_path.rglob("*.t.sol"))
-
-        if args.git:
-            git_root = setup_git(git_root, io)
-            if args.gitignore:
-                check_gitignore(git_root, io)
-        if args.foundry:
-            if not Path(args.foundry).joinpath("foundry.toml").exists():
-                io.tool_error(
-                    f"The specified path {args.foundry} does not appear to be a Foundry project."
-                )
-                return 1
-            foundry_files = find_foundry_files(args.foundry)
-            if foundry_files:
-                fnames.extend(foundry_files)
-            else:
-                io.tool_error("No Foundry files found to add to the chat.")
-                return 1
+        if not foundry_path:
+            return []
+        return list(foundry_path.rglob("*.sol")) + list(foundry_path.rglob("*.t.sol"))
 
     if args.foundry:
         foundry_path = Path(args.foundry)
