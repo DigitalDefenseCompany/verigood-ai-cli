@@ -53,7 +53,9 @@ def setup_git(git_root, io):
     repo = None
     if git_root:
         repo = git.Repo(git_root)
-    elif io.confirm_ask("No git repo found, create one to track GPT's changes (recommended)?"):
+    elif io.confirm_ask(
+        "No git repo found, create one to track GPT's changes (recommended)?"
+    ):
         git_root = str(Path.cwd().resolve())
         repo = git.Repo.init(git_root)
         io.tool_output("Git repository created in the current working directory.")
@@ -83,7 +85,9 @@ def setup_git(git_root, io):
             io.tool_error('Update git name with: git config user.name "Your Name"')
         if not user_email:
             git_config.set_value("user", "email", "you@example.com")
-            io.tool_error('Update git email with: git config user.email "you@example.com"')
+            io.tool_error(
+                'Update git email with: git config user.email "you@example.com"'
+            )
 
     return repo.working_tree_dir
 
@@ -225,22 +229,22 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         metavar="VOICE_LANGUAGE",
         default="en",
         help="Specify the language for voice using ISO 639-1 code (default: auto)",
-        )
+    )
     core_group.add_argument(
         "--foundry",
         metavar="FOUNDRY_PATH",
         help="Specify the path to the foundry project to add all files to the chat",
-        )
+    )
     core_group.add_argument(
         "--foundry",
         metavar="FOUNDRY_PATH",
         help="Specify the path to the foundry project to add all files to the chat",
-        )
+    )
     core_group.add_argument(
         "--foundry",
         metavar="FOUNDRY_PATH",
         help="Specify the path to the foundry project to add all files to the chat",
-        )
+    )
     core_group.add_argument(
         "--foundry",
         metavar="FOUNDRY_PATH",
@@ -315,10 +319,14 @@ def main(argv=None, input=None, output=None, force_git_root=None):
     ##########
     history_group = parser.add_argument_group("History Files")
     default_input_history_file = (
-        os.path.join(git_root, ".aider.input.history") if git_root else ".aider.input.history"
+        os.path.join(git_root, ".aider.input.history")
+        if git_root
+        else ".aider.input.history"
     )
     default_chat_history_file = (
-        os.path.join(git_root, ".aider.chat.history.md") if git_root else ".aider.chat.history.md"
+        os.path.join(git_root, ".aider.chat.history.md")
+        if git_root
+        else ".aider.chat.history.md"
     )
     history_group.add_argument(
         "--input-history-file",
@@ -351,7 +359,6 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         "--foundry",
         metavar="FOUNDRY_PATH",
         help="Specify the path to the foundry project to add all files to the chat",
-        default=None,
         default=False,
     )
     output_group.add_argument(
@@ -595,31 +602,36 @@ def main(argv=None, input=None, output=None, force_git_root=None):
     if "VSCODE_GIT_IPC_HANDLE" in os.environ:
         args.pretty = False
         io.tool_output("VSCode terminal detected, pretty output has been disabled.")
+
+    def find_foundry_files(foundry_path):
+        return list(foundry_path.rglob("*.sol")) + list(foundry_path.rglob("*.t.sol"))
+
+        if args.git:
+            git_root = setup_git(git_root, io)
+            if args.gitignore:
+                check_gitignore(git_root, io)
+        if args.foundry:
+            if not Path(args.foundry).joinpath("foundry.toml").exists():
+                io.tool_error(
+                    f"The specified path {args.foundry} does not appear to be a Foundry project."
+                )
+                return 1
+            foundry_files = find_foundry_files(args.foundry)
+            if foundry_files:
+                fnames.extend(foundry_files)
+            else:
+                io.tool_error("No Foundry files found to add to the chat.")
+                return 1
+
     if args.foundry:
         foundry_path = Path(args.foundry)
-        foundry_toml = foundry_path / 'foundry.toml'
+        foundry_toml = foundry_path / "foundry.toml"
         if not foundry_toml.exists():
-            io.tool_error(f"The specified path {args.foundry} does not appear to be a Foundry project.")
+            io.tool_error(
+                f"The specified path {args.foundry} does not appear to be a Foundry project."
+            )
             return 1
         foundry_files = find_foundry_files(foundry_path)
-        if foundry_files:
-            fnames.extend(foundry_files)
-        else:
-            io.tool_error("No Foundry files found to add to the chat.")
-            return 1
-
-def find_foundry_files(foundry_path):
-    return list(foundry_path.rglob('*.sol')) + list(foundry_path.rglob('*.t.sol'))
-
-    if args.git:
-        git_root = setup_git(git_root, io)
-        if args.gitignore:
-            check_gitignore(git_root, io)
-    if args.foundry:
-        if not Path(args.foundry).joinpath('foundry.toml').exists():
-            io.tool_error(f"The specified path {args.foundry} does not appear to be a Foundry project.")
-            return 1
-        foundry_files = find_foundry_files(args.foundry)
         if foundry_files:
             fnames.extend(foundry_files)
         else:
@@ -663,7 +675,9 @@ def find_foundry_files(foundry_path):
     res = litellm.validate_environment(args.model)
     missing_keys = res.get("missing_keys")
     if missing_keys:
-        io.tool_error(f"To use model {args.model}, please set these environment variables:")
+        io.tool_error(
+            f"To use model {args.model}, please set these environment variables:"
+        )
         for key in missing_keys:
             io.tool_error(f"- {key}")
         return 1
@@ -674,7 +688,9 @@ def find_foundry_files(foundry_path):
     # Check in advance that we have model metadata
     try:
         main_model = models.Model(
-            args.model, weak_model=args.weak_model, require_model_info=args.require_model_info
+            args.model,
+            weak_model=args.weak_model,
+            require_model_info=args.require_model_info,
         )
     except models.NoModelInfo as err:
         io.tool_error(str(err))
@@ -724,7 +740,9 @@ def find_foundry_files(foundry_path):
         coder.apply_updates()
         return
 
-    io.tool_output("Use /help to see in-chat commands, run with --help to see cmd line args")
+    io.tool_output(
+        "Use /help to see in-chat commands, run with --help to see cmd line args"
+    )
 
     if git_root and Path.cwd().resolve() != Path(git_root).resolve():
         io.tool_error(
