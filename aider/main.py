@@ -225,6 +225,11 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         metavar="VOICE_LANGUAGE",
         default="en",
         help="Specify the language for voice using ISO 639-1 code (default: auto)",
+        )
+    core_group.add_argument(
+        "--foundry",
+        metavar="FOUNDRY_PATH",
+        help="Specify the path to the foundry project to add all files to the chat",
     )
     core_group.add_argument(
         "--foundry",
