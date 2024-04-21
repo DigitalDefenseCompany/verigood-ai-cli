@@ -226,6 +226,11 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         default="en",
         help="Specify the language for voice using ISO 639-1 code (default: auto)",
     )
+    core_group.add_argument(
+        "--foundry",
+        metavar="FOUNDRY_PATH",
+        help="Specify the path to the foundry project to add all files to the chat",
+    )
 
     ##########
     model_group = parser.add_argument_group("Advanced Model Settings")
@@ -568,6 +573,16 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         git_root = setup_git(git_root, io)
         if args.gitignore:
             check_gitignore(git_root, io)
+    if args.foundry:
+        if not Path(args.foundry).joinpath('foundry.toml').exists():
+            io.tool_error(f"The specified path {args.foundry} does not appear to be a Foundry project.")
+            return 1
+        foundry_files = find_foundry_files(args.foundry)
+        if foundry_files:
+            fnames.extend(foundry_files)
+        else:
+            io.tool_error("No Foundry files found to add to the chat.")
+            return 1
 
     def scrub_sensitive_info(text):
         # Replace sensitive information with placeholder
