@@ -347,6 +347,13 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         help="Use colors suitable for a light terminal background (default: False)",
         default=False,
     )
+    core_group.add_argument(
+        "--foundry",
+        metavar="FOUNDRY_PATH",
+        help="Specify the path to the foundry project to add all files to the chat",
+        default=None,
+        default=False,
+    )
     output_group.add_argument(
         "--pretty",
         action=argparse.BooleanOptionalAction,
@@ -588,6 +595,21 @@ def main(argv=None, input=None, output=None, force_git_root=None):
     if "VSCODE_GIT_IPC_HANDLE" in os.environ:
         args.pretty = False
         io.tool_output("VSCode terminal detected, pretty output has been disabled.")
+    if args.foundry:
+        foundry_path = Path(args.foundry)
+        foundry_toml = foundry_path / 'foundry.toml'
+        if not foundry_toml.exists():
+            io.tool_error(f"The specified path {args.foundry} does not appear to be a Foundry project.")
+            return 1
+        foundry_files = find_foundry_files(foundry_path)
+        if foundry_files:
+            fnames.extend(foundry_files)
+        else:
+            io.tool_error("No Foundry files found to add to the chat.")
+            return 1
+
+def find_foundry_files(foundry_path):
+    return list(foundry_path.rglob('*.sol')) + list(foundry_path.rglob('*.t.sol'))
 
     if args.git:
         git_root = setup_git(git_root, io)
