@@ -2,3 +2,8 @@
 .aider*
 aider_chat.egg-info/
 build
+aider/lib
+aider/include
+aider/bin
+aider/share
+aider/pyvenv.cfg
