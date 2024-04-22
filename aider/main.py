@@ -564,7 +564,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         if right_repo_root:
             return main(argv, input, output, right_repo_root)
 
-    io.tool_output(f"Aider v{__version__}")
+    io.tool_output(f"VeriGood.ai v{__version__}")
 
     if not args.skip_check_update:
         check_version(io.tool_error)
@@ -593,6 +593,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         files = [file for file in files if "forge-std" not in str(file)]
         return files
 
+    foundry_path = None
     if args.foundry:
         foundry_path = Path(args.foundry)
         foundry_toml = foundry_path / "foundry.toml"
@@ -687,6 +688,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
             use_git=args.git,
             voice_language=args.voice_language,
             aider_ignore_file=args.aiderignore,
+            foundry_path=foundry_path,
         )
     except ValueError as err:
         io.tool_error(str(err))

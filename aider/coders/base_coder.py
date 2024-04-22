@@ -99,6 +99,7 @@ class Coder:
         use_git=True,
         voice_language=None,
         aider_ignore_file=None,
+        foundry_path=None,
     ):
         if not fnames:
             fnames = []
@@ -128,6 +129,7 @@ class Coder:
 
         self.dry_run = dry_run
         self.pretty = pretty
+        self.foundry_path = foundry_path
 
         if pretty:
             self.console = Console()

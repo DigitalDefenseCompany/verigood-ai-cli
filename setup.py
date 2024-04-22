@@ -24,7 +24,7 @@ setup(
     python_requires=">=3.9,<3.13",
     entry_points={
         "console_scripts": [
-            "aider = aider.main:main",
+            "verigood = aider.main:main",
         ],
     },
     description="aider is GPT powered coding in your terminal",

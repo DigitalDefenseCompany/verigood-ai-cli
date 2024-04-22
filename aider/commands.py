@@ -3,6 +3,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+import webbrowser
 
 import git
 import openai
@@ -90,7 +91,6 @@ class Commands:
     def run(self, inp):
         if inp.startswith("!"):
             return self.do_run("run", inp[1:])
-            return
 
         res = self.matching_commands(inp)
         if res is None:
@@ -551,6 +551,81 @@ class Commands:
             self.io.tool_output("\nRepo files not in the chat:\n")
         for file in other_files:
             self.io.tool_output(f"  {file}")
+
+    def cmd_verify(self, args):
+        "Verify the Halmos specification using the Halmos command"
+        spec_file = self.find_spec_file()
+        if not spec_file:
+            self.io.tool_error("No TestSpec.t.sol file found in the test directory.")
+            return
+
+        output_dir = Path(self.coder.foundry_path) / "halmos_output"
+        output_dir.mkdir(exist_ok=True)
+
+        command = f"halmos --root {str(Path(self.coder.foundry_path))} --function prove"
+        self.io.tool_output(f"Running Halmos command: {command}")
+
+        output_file = output_dir / "halmos_output.txt"
+        try:
+            with open(output_file, "w") as f:
+                result = subprocess.run(
+                    command,
+                    shell=True,
+                    check=True,
+                    stdout=f,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                )
+            # print the output to the chat
+            with open(output_file, "r") as f:
+                self.io.tool_output(f.read())
+            self.generate_html_report(str(output_file))
+        except subprocess.CalledProcessError as e:
+            self.io.tool_error(f"Error running Halmos command: {e}")
+            self.io.tool_error(e.stderr)
+
+    def find_spec_file(self):
+        test_dir = Path(self.coder.foundry_path) / "test"
+        spec_file = test_dir / "TestSpec.t.sol"
+        self.io.tool_output(f"Looking for TestSpec.t.sol in {spec_file}")
+        if spec_file.exists():
+            return str(spec_file)
+        return None
+
+    def generate_html_report(self, output_file):
+        output_dir = Path(self.coder.foundry_path) / "halmos_output"
+        html_file = output_dir / "halmos_report.html"
+
+        with open(output_file, "r") as f:
+            halmos_output = f.read()
+
+        # Create a beautiful HTML report using a modern CSS framework (e.g., Tailwind CSS)
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+            <title>Halmos Verification Report</title>
+        </head>
+        <body class="bg-gray-100">
+            <div class="container mx-auto my-8">
+                <h1 class="text-4xl font-bold mb-4">Halmos Verification Report</h1>
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <pre class="text-sm text-gray-800">{halmos_output}</pre>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+
+        with open(html_file, "w") as f:
+            f.write(html_content)
+
+        # Open the HTML report in the default web browser
+        webbrowser.open(f"file://{html_file.resolve()}")
+        self.io.tool_output(f"Halmos verification report opened in the web browser.")
 
     def cmd_help(self, args):
         "Show help about all commands"
