@@ -7,3 +7,4 @@ aider/include
 aider/bin
 aider/share
 aider/pyvenv.cfg
+.DS_Store

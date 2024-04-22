@@ -580,7 +580,18 @@ def main(argv=None, input=None, output=None, force_git_root=None):
     def find_foundry_files(foundry_path):
         if not foundry_path:
             return []
-        return list(foundry_path.rglob("*.sol")) + list(foundry_path.rglob("*.t.sol"))
+        # find all solidity files in the foundry project
+        files = (
+            list(foundry_path.rglob("src/**/*.sol"))
+            + list(foundry_path.rglob("test/**/*.t.sol"))
+            + list(foundry_path.rglob("script/**/*.s.sol"))
+            + list(foundry_path.rglob("**/*.md"))
+        )
+        # add foundry toml file
+        files.append(foundry_path / "foundry.toml")
+        # remove forge-std files
+        files = [file for file in files if "forge-std" not in str(file)]
+        return files
 
     if args.foundry:
         foundry_path = Path(args.foundry)

@@ -10,6 +10,7 @@ from prompt_toolkit.completion import Completion
 
 from aider import prompts, voice
 from aider.scrape import Scraper
+from aider.spec import Spec
 from aider.utils import is_image_file
 
 from .dump import dump  # noqa: F401
@@ -134,12 +135,16 @@ class Commands:
 
         # system messages
         main_sys = self.coder.fmt_system_prompt(self.coder.gpt_prompts.main_system)
-        main_sys += "\n" + self.coder.fmt_system_prompt(self.coder.gpt_prompts.system_reminder)
+        main_sys += "\n" + self.coder.fmt_system_prompt(
+            self.coder.gpt_prompts.system_reminder
+        )
         msgs = [
             dict(role="system", content=main_sys),
             dict(
                 role="system",
-                content=self.coder.fmt_system_prompt(self.coder.gpt_prompts.system_reminder),
+                content=self.coder.fmt_system_prompt(
+                    self.coder.gpt_prompts.system_reminder
+                ),
             ),
         ]
 
@@ -156,7 +161,9 @@ class Commands:
         # repo map
         other_files = set(self.coder.get_all_abs_files()) - set(self.coder.abs_fnames)
         if self.coder.repo_map:
-            repo_content = self.coder.repo_map.get_repo_map(self.coder.abs_fnames, other_files)
+            repo_content = self.coder.repo_map.get_repo_map(
+                self.coder.abs_fnames, other_files
+            )
             if repo_content:
                 tokens = self.coder.main_model.token_count(repo_content)
                 res.append((tokens, "repository map", "use --map-tokens to resize"))
@@ -203,7 +210,9 @@ class Commands:
 
         remaining = limit - total
         if remaining > 1024:
-            self.io.tool_output(f"{cost_pad}{fmt(remaining)} tokens remaining in context window")
+            self.io.tool_output(
+                f"{cost_pad}{fmt(remaining)} tokens remaining in context window"
+            )
         elif remaining > 0:
             self.io.tool_error(
                 f"{cost_pad}{fmt(remaining)} tokens remaining in context window (use /drop or"
@@ -227,7 +236,10 @@ class Commands:
             item.a_path for item in last_commit.diff(last_commit.parents[0])
         ]
 
-        if any(self.coder.repo.repo.is_dirty(path=fname) for fname in changed_files_last_commit):
+        if any(
+            self.coder.repo.repo.is_dirty(path=fname)
+            for fname in changed_files_last_commit
+        ):
             self.io.tool_error(
                 "The repository has uncommitted changes in files that were modified in the last"
                 " commit. Please commit or stash them before undoing."
@@ -255,7 +267,9 @@ class Commands:
             not last_commit.message.startswith("aider:")
             or last_commit.hexsha[:7] != self.coder.last_aider_commit_hash
         ):
-            self.io.tool_error("The last commit was not made by aider in this chat session.")
+            self.io.tool_error(
+                "The last commit was not made by aider in this chat session."
+            )
             self.io.tool_error(
                 "You could try `/git reset --hard HEAD^` but be aware that this is a destructive"
                 " command!"
@@ -321,7 +335,9 @@ class Commands:
         for fn in raw_matched_files:
             matched_files += expand_subdir(fn)
 
-        matched_files = [str(Path(fn).relative_to(self.coder.root)) for fn in matched_files]
+        matched_files = [
+            str(Path(fn).relative_to(self.coder.root)) for fn in matched_files
+        ]
 
         # if repo, filter against it
         if self.coder.repo:
@@ -359,14 +375,18 @@ class Commands:
                 all_matched_files.update(matched_files)
                 continue
 
-            if self.io.confirm_ask(f"No files matched '{word}'. Do you want to create {fname}?"):
+            if self.io.confirm_ask(
+                f"No files matched '{word}'. Do you want to create {fname}?"
+            ):
                 fname.touch()
                 all_matched_files.add(str(fname))
 
         for matched_file in all_matched_files:
             abs_file_path = self.coder.abs_root_path(matched_file)
 
-            if not abs_file_path.startswith(self.coder.root) and not is_image_file(matched_file):
+            if not abs_file_path.startswith(self.coder.root) and not is_image_file(
+                matched_file
+            ):
                 self.io.tool_error(
                     f"Can not add {abs_file_path}, which is not within {self.coder.root}"
                 )
@@ -375,7 +395,10 @@ class Commands:
             if abs_file_path in self.coder.abs_fnames:
                 self.io.tool_error(f"{matched_file} is already in the chat")
             else:
-                if is_image_file(matched_file) and not self.coder.main_model.accepts_images:
+                if (
+                    is_image_file(matched_file)
+                    and not self.coder.main_model.accepts_images
+                ):
                     self.io.tool_error(
                         f"Cannot add image file {matched_file} as the"
                         f" {self.coder.main_model.name} does not support image.\nYou can run `aider"
@@ -541,6 +564,20 @@ class Commands:
             else:
                 self.io.tool_output(f"{cmd} No description available.")
 
+    def cmd_spec(self, args):
+        "Generate the Halmos specification for the Foundry project"
+        context = self.coder.get_context_from_history(self.coder.cur_messages)
+        spec = Spec(
+            self.io,
+            self.coder.main_model.commit_message_models(),
+            self.coder.abs_fnames,
+        )
+        generated_spec = spec.generate_spec(context)
+        if generated_spec:
+            self.io.tool_output(generated_spec)
+        else:
+            self.io.tool_error("Failed to generate Halmos specification!")
+
     def cmd_voice(self, args):
         "Record and transcribe voice input"
 
@@ -574,7 +611,9 @@ class Commands:
         history = "\n".join(history)
 
         try:
-            text = self.voice.record_and_transcribe(history, language=self.voice_language)
+            text = self.voice.record_and_transcribe(
+                history, language=self.voice_language
+            )
         except openai.OpenAIError as err:
             self.io.tool_error(f"Unable to use OpenAI whisper model: {err}")
             return
