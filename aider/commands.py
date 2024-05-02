@@ -556,15 +556,47 @@ class Commands:
         "Verify the Halmos specification using the Halmos command"
         spec_file = self.find_spec_file()
         if not spec_file:
-            self.io.tool_error("No TestSpec.t.sol file found in the test directory.")
+            self.io.tool_error("No Spec.t.sol file found in the test directory.")
             return
 
         output_dir = Path(self.coder.foundry_path) / "halmos_output"
         output_dir.mkdir(exist_ok=True)
 
-        command = f"halmos --root {str(Path(self.coder.foundry_path))} --function prove"
-        self.io.tool_output(f"Running Halmos command: {command}")
+        # Install Halmos cheatcodes as a Forge dependency
+        foundry_path = str(Path(self.coder.foundry_path))
+        if foundry_path:
+            original_dir = os.getcwd()
+            try:
+                os.chdir(foundry_path)
 
+                # Check if the dependency is already installed
+                if not (Path(foundry_path) / "halmos-cheatcodes").exists():
+                    command = "forge install a16z/halmos-cheatcodes --no-git"
+                    self.io.tool_output(f"Installing Halmos cheatcodes: {command}")
+                    result = subprocess.run(
+                        command,
+                        shell=True,
+                        check=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+                    self.io.tool_output(result.stdout)
+                else:
+                    self.io.tool_output("Halmos cheatcodes already installed.")
+
+            except subprocess.CalledProcessError as e:
+                if "already exists and is not an empty directory" in e.stderr:
+                    self.io.tool_output("Halmos cheatcodes already installed.")
+                else:
+                    self.io.tool_error(f"Error installing Halmos cheatcodes: {e}")
+                    self.io.tool_error(e.stderr)
+                    return
+            finally:
+                os.chdir(original_dir)
+
+        command = f"halmos --root {str(Path(self.coder.foundry_path))} --function check"
+        self.io.tool_output(f"Running Halmos command: {command}")
         output_file = output_dir / "halmos_output.txt"
         try:
             with open(output_file, "w") as f:
@@ -586,8 +618,8 @@ class Commands:
 
     def find_spec_file(self):
         test_dir = Path(self.coder.foundry_path) / "test"
-        spec_file = test_dir / "TestSpec.t.sol"
-        self.io.tool_output(f"Looking for TestSpec.t.sol in {spec_file}")
+        spec_file = test_dir / "Spec.t.sol"
+        self.io.tool_output(f"Looking for Spec.t.sol in {spec_file}")
         if spec_file.exists():
             return str(spec_file)
         return None
@@ -642,16 +674,18 @@ class Commands:
     def cmd_spec(self, args):
         "Generate the Halmos specification for the Foundry project"
         context = self.coder.get_context_from_history(self.coder.cur_messages)
+        # check if logging is enabled as per the args
+        verbose_logging = False
+        if "--verbose" in args:
+            verbose_logging = True
         spec = Spec(
             self.io,
-            self.coder.main_model.commit_message_models(),
+            self.coder.main_model.default_model(),
             self.coder.abs_fnames,
+            self.coder,
+            verbose_logging=verbose_logging,
         )
-        generated_spec = spec.generate_spec(context)
-        if generated_spec:
-            self.io.tool_output(generated_spec)
-        else:
-            self.io.tool_error("Failed to generate Halmos specification!")
+        spec.run(context)
 
     def cmd_voice(self, args):
         "Record and transcribe voice input"

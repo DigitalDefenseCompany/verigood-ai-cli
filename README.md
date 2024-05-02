@@ -8,15 +8,15 @@ Formal verification is a critical technique for ensuring the correctness and sec
 
 ## Features
 
-- **AI-Assisted Specification Generation**: Utilize AI models to automatically generate formal specifications based on smart contract code and user requirements. The AI models are trained on a vast corpus of smart contract code and formal verification techniques to produce high-quality specifications.
+- 🧠 **AI-Assisted Specification Generation**: Utilize AI models to automatically generate formal specifications based on smart contract code and user requirements. The AI models are trained on a vast corpus of smart contract code and formal verification techniques to produce high-quality specifications.
 
-- **Intelligent Verification Guidance**: Leverage LLMs to provide intelligent guidance and suggestions throughout the formal verification process. The LLMs can analyze the smart contract code, identify potential vulnerabilities, and offer recommendations for verifying specific properties.
+- 🌟 **Intelligent Verification Guidance**: Leverage LLMs to provide intelligent guidance and suggestions throughout the formal verification process. The LLMs can analyze the smart contract code, identify potential vulnerabilities, and offer recommendations for verifying specific properties.
 
-- **Integration with Halmos**: Seamlessly integrate with the Halmos library, a symbolic testing tool for EVM smart contracts. Halmos allows writing property-based tests in Solidity and uses symbolic execution to verify the properties for all possible input combinations.
+- 🔧 **Seamless Integration with Halmos**: Seamlessly integrate with the Halmos library, a symbolic testing tool for EVM smart contracts. Halmos allows writing property-based tests in Solidity and uses symbolic execution to verify the properties for all possible input combinations.
 
-- **Comprehensive Verification Coverage**: Generate comprehensive test cases and verification scenarios using AI techniques. The AI models can explore various input spaces, consider edge cases, and generate targeted tests to achieve high verification coverage.
+- 🎯 **Comprehensive Verification Coverage**: Generate comprehensive test cases and verification scenarios using AI techniques. The AI models can explore various input spaces, consider edge cases, and generate targeted tests to achieve high verification coverage.
 
-- **Intuitive User Interface**: Provide an intuitive and user-friendly interface for interacting with the AI-assisted formal verification system. Users can input their smart contract code, specify requirements, and receive automated specifications and verification results.
+- 💻 **Intuitive User Interface**: Provide an intuitive and user-friendly interface for interacting with the AI-assisted formal verification system. Users can input their smart contract code, specify requirements, and receive automated specifications and verification results.
 
 ## Getting Started
 

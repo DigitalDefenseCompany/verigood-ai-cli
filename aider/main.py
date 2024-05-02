@@ -590,7 +590,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
         # add foundry toml file
         files.append(foundry_path / "foundry.toml")
         # remove forge-std files
-        files = [file for file in files if "forge-std" not in str(file)]
+        files = [file for file in files if str(foundry_path / "lib") not in str(file)]
         return files
 
     foundry_path = None
@@ -658,6 +658,7 @@ def main(argv=None, input=None, output=None, force_git_root=None):
 
     # Check in advance that we have model metadata
     try:
+        # print args.model
         main_model = models.Model(
             args.model,
             weak_model=args.weak_model,

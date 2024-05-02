@@ -10,6 +10,7 @@ from PIL import Image
 from aider.dump import dump  # noqa: F401
 
 DEFAULT_MODEL_NAME = "gpt-4-1106-preview"
+DEFAULT_GPT_4_MODEL_NAME = "gpt-4-turbo"
 DEFAULT_WEAK_MODEL_NAME = "gpt-3.5-turbo"
 
 
@@ -184,6 +185,15 @@ class Model:
 
     def commit_message_models(self):
         return [self.weak_model]
+
+    def default_model(self):
+        return [
+            Model(
+                DEFAULT_GPT_4_MODEL_NAME,
+                weak_model=False,
+                require_model_info=True,
+            )
+        ]
 
     def tokenizer(self, text):
         return litellm.encode(model=self.name, text=text)

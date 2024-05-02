@@ -1,7 +1,9 @@
-Compiling 28 files with 0.8.25
-Solc 0.8.25 finished in 1.96s
+Compiling 30 files with 0.8.25
+Solc 0.8.25 finished in 1.98s
 Compiler run [32msuccessful![0m
 
-Running 1 tests for test/TestSpec.t.sol:MyContract
-[32m[PASS][0m prove_single_fail(address,uint256) (paths: 3, time: 0.03s, bounds: [])
-Symbolic test result: 1 passed; 0 failed; time: 0.04s
+Running 3 tests for test/Spec.t.sol:CounterTest
+[31m[ERROR][0m check_increment() (paths: 2, time: 0.03s, bounds: [])
+[31m[ERROR][0m check_multipleIncrements() (paths: 7, time: 0.08s, bounds: [])
+[31m[ERROR][0m check_setNumber(uint256) (paths: 1, time: 0.02s, bounds: [])
+Symbolic test result: 0 passed; 3 failed; time: 0.15s
