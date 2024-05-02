@@ -41,6 +41,18 @@ To get started with AI-assisted formal verification for smart contracts with Ver
 
 Follow the prompts and instructions provided by the tool to generate formal specifications and perform verification.
 
+Once in the application, you can generate the specifications for your smart contract by running the following command:
+
+```bash
+/spec [--verbose]
+```
+
+You can then proceed to verify the smart contract using the generated specifications:
+
+```bash
+/verify [--verbose]
+```
+
 ## Examples
 
 Here are a few examples demonstrating the capabilities of AI-assisted formal verification with VeriGood.ai:
