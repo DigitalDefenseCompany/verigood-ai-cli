@@ -27,19 +27,22 @@ Formal verification is a critical technique for ensuring the correctness and sec
 To get started with AI-assisted formal verification for smart contracts with VeriGood.ai, follow these steps:
 
 1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yourusername/ai-formal-verification.git
-  ```
+
+```bash
+git clone https://github.com/yourusername/ai-formal-verification.git
+```
 
 2. **Install the dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+
+```bash
+pip install -r requirements.txt
+```
 
 3. **Run the application**:
-   ```bash
-   verigood --foundry [PATH_TO_FOUNDRY_PROJECT]
-  ```
+
+```bash
+verigood --foundry [PATH_TO_FOUNDRY_PROJECT]
+```
 
 Follow the prompts and instructions provided by the tool to generate formal specifications and perform verification.
 
