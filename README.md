@@ -2,6 +2,8 @@
 
 This project, powered by VeriGood.ai, aims to leverage the power of AI and Large Language Models (LLMs) to support formal verification of smart contracts. By integrating AI capabilities into the formal verification process, we can enhance the efficiency and effectiveness of verifying the correctness and security of smart contracts.
 
+![Demo GIF](assets/verigood-ai-demo.gif)
+
 ## Overview
 
 Formal verification is a critical technique for ensuring the correctness and security of smart contracts. However, writing formal specifications and conducting thorough verification can be time-consuming and require specialized expertise. This project, powered by VeriGood.ai, addresses these challenges by harnessing the capabilities of AI and LLMs to assist in the formal verification process.

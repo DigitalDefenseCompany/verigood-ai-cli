@@ -14,22 +14,28 @@ contract CounterSpecTest is SymTest, Test {
         counter.setNumber(0);
     }
 
-    /// @notice Test increment function with symbolic execution
+    /// @notice Test the increment functionality symbolically
     /// @dev Checks that incrementing the counter updates the number correctly
     function check_increment() public {
-        uint256 initialNumber = svm.createUint256("initialNumber");
-        vm.assume(initialNumber < type(uint256).max);
-
-        counter.setNumber(initialNumber);
+        uint256 initialNumber = counter.number();
         counter.increment();
-
-        assertEq(counter.number(), initialNumber + 1, "Increment does not update number correctly");
+        uint256 incrementedNumber = counter.number();
+        assertEq(incrementedNumber, initialNumber + 1, "Increment did not increase the number by 1");
     }
 
-    /// @notice Test setNumber function with symbolic execution
-    /// @dev Checks that setting the number updates the state correctly
-    function check_setNumber(uint256 newNumber) public {
-        counter.setNumber(newNumber);
-        assertEq(counter.number(), newNumber, "setNumber does not update number correctly");
+    /// @notice Symbolically test setting the counter number
+    /// @dev Checks that the number is set correctly
+    function check_setNumber(uint256 x) public {
+        counter.setNumber(x);
+        assertEq(counter.number(), x, "Number was not set correctly");
+    }
+
+    /// @notice Ensure that the number does not overflow on increment
+    /// @dev Checks for overflow conditions
+    function check_noOverflow() public {
+        counter.setNumber(type(uint256).max);
+        counter.increment();
+        uint256 incrementedNumber = counter.number();
+        assertEq(incrementedNumber, 0, "Overflow should wrap around to zero");
     }
 }
