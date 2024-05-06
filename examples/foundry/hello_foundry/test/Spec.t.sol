@@ -20,14 +20,14 @@ contract CounterSpecTest is SymTest, Test {
         uint256 initialNumber = counter.number();
         counter.increment();
         uint256 incrementedNumber = counter.number();
-        assertEq(incrementedNumber, initialNumber + 1, "Increment did not increase the number by 1");
+        assert(incrementedNumber == initialNumber + 1);
     }
 
     /// @notice Symbolically test setting the counter number
     /// @dev Checks that the number is set correctly
     function check_setNumber(uint256 x) public {
         counter.setNumber(x);
-        assertEq(counter.number(), x, "Number was not set correctly");
+        assert(counter.number() == x);
     }
 
     /// @notice Ensure that the number does not overflow on increment
@@ -36,6 +36,6 @@ contract CounterSpecTest is SymTest, Test {
         counter.setNumber(type(uint256).max);
         counter.increment();
         uint256 incrementedNumber = counter.number();
-        assertEq(incrementedNumber, 0, "Overflow should wrap around to zero");
+        assert(incrementedNumber == 0);
     }
 }
